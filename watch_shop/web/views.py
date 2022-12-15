@@ -6,6 +6,9 @@ from django.urls import reverse_lazy
 from django.views import generic as views
 from rest_framework import generics as api_views
 from rest_framework import serializers
+
+from watch_shop.auth_app.models import AppUser
+from watch_shop.auth_app.tasks import send_email_when_checkout_invoked
 from watch_shop.web.forms import ProductEditForm, ContactForm
 from watch_shop.web.models import Product, ShoppingCart, ShoppingProduct
 
@@ -35,7 +38,6 @@ class ContactView(views.TemplateView):
         return context
 
 
-# ListView
 class ProductsView(LoginRequiredMixin, views.ListView):
     template_name = 'products.html'
     model = Product
@@ -111,10 +113,12 @@ class ShoppingCartView(views.ListView):
         }
         for product in entry_to_delete:
             try:
-                context['total_sum'] += product.product.price
+                context['total_sum'] += product.product.price * product.quantity
                 entry_to_delete.delete()
             except ShoppingProduct.DoesNotExist:
                 continue
+
+        send_email_when_checkout_invoked(email=AppUser.object.get(pk=pk).email, order=True)
         return render(request=self, template_name='checkout_page.html', context=context)
 
     def add_item(self, pk, product_id):
@@ -152,16 +156,6 @@ class ProductEditView(LoginRequiredMixin, views.UpdateView, PermissionRequiredMi
         return reverse_lazy('products')
 
 
-# def error_404_view(request, exception):
-#     # we add the path to the the 404.html file
-#     # here. The name of our HTML file is 404.html
-#     return render(request, '404.html')
-#
-#
-# def handler500(request, *args, **argv):
-#     response = render(request, '500.html',)
-#     response.status_code = 500
-#     return response
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product

@@ -38,13 +38,18 @@ label.highlight {
 {#    {{ form.as_div }}#}
                 {% for field in form %}
     <div class="field-wrap">
- {% for error in form.non_field_errors %}
+ {% for error in field.errors %}
       <li class="text-white">  {{ error }}</li>
         {% endfor %}
     {% if field.name == 'photo' %}
 
         <img src="/media/{{ object.photo }}" alt="..." width="130" class="rounded mb-2 img-thumbnail">
         {{ field.label }} {{ field }}
+    {% elif field.name == 'description' %}
+        <label style="margin-top:235px">
+            {{field.label}}
+        </label>
+        {{ field }}
     {% else %}
         {{ field.label_tag }} {{ field }}
     {% endif %}

@@ -6,13 +6,6 @@ from watch_shop.auth_app.models import Profile
 
 UserModel = get_user_model()
 
-#
-# class AppUserCreationForm(auth_forms.UserCreationForm):
-#     class Meta:
-#         model = UserModel
-#         fields = (UserModel.USERNAME_FIELD, 'password1', 'password2',)
-#         field_classes = {'username': auth_forms.UsernameField}
-
 
 class SignUpForm(auth_forms.UserCreationForm):
     first_name = forms.CharField(required=False)
@@ -23,14 +16,9 @@ class SignUpForm(auth_forms.UserCreationForm):
         model = UserModel
         fields = (UserModel.USERNAME_FIELD, 'password1', 'password2',)
         field_classes = {'username': auth_forms.UsernameField}
-        # for field in fields:
-        #     field.widget.attrs.update({'class': 'field-wrap'})
 
     def save(self, commit=True):
         user = super().save(commit=commit)
-        # first_name = self.cleaned_data['first_name']
-        # last_name = self.cleaned_data['last_name']
-        # age = self.cleaned_data['age']
         profile = Profile(
             user=user,
             first_name=self.cleaned_data['first_name'],
@@ -41,14 +29,6 @@ class SignUpForm(auth_forms.UserCreationForm):
             profile.save()
 
         return user
-
-    # def save(self, commit=True):
-    #     user = super().save(commit=commit)
-    #     profile = Profile(
-    #         user=user,
-    #     )
-    #     if commit:
-    #         profile.save()
 
 
 class UserEditForm(auth_forms.UserChangeForm):

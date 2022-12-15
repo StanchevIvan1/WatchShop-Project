@@ -1,4 +1,3 @@
-import logging
 import time
 
 from celery import shared_task
@@ -11,6 +10,11 @@ from watch_shop.auth_app.models import Profile
 @shared_task
 def send_email_to_new_users(email):
     SESservice().send_email(email)
+
+
+@shared_task
+def send_email_when_checkout_invoked(email, order):
+    SESservice().send_email(email, order)
 
 
 @shared_task

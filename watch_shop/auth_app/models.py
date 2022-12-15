@@ -54,9 +54,3 @@ class Profile(models.Model):
         primary_key=True,
         on_delete=models.CASCADE,
     )
-
-# - Extending AbstractUser
-# class AppUser(auth_models.AbstractUser):
-#     age = models.PositiveIntegerField()
-
-# Extending AbstractBaseUser
